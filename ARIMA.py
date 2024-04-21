@@ -158,14 +158,14 @@ plot_predict(model_fit, start=0, end=800, ax=ax)
 plt.show()
 
 # forecast= model_fit.get_forecast(steps= 92, alpha=0.05)  # 95% conf
-forecast = model_fit.predict(start= 700, end= 792, dynamic = True)
-# Extract the forecasted values and confidence intervals
-# fc= forecast.predicted_mean
-# forecast_values = fc.to_numpy(copy = True)
-# Call the forecast_accuracy() function
-# accuracy_metrics = forecast_accuracy(forecast_values, test.to_numpy(copy=True))
-# print(accuracy_metrics)
+forecast = model_fit.predict(start= 700, end= 791, dynamic = True)
+# print(forecast[:10])
+forecast_values = forecast.to_numpy(copy = True)
 
-print(forecast)
+# Call the forecast_accuracy() function
+accuracy_metrics = forecast_accuracy(forecast_values, test.to_numpy(copy=True))
+print(accuracy_metrics)
+
+# print(forecast)
 
 
