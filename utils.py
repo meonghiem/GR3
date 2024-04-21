@@ -2,6 +2,8 @@ from statsmodels.tsa.stattools import adfuller
 import pandas as pd
 from statsmodels.stats.stattools import jarque_bera
 import numpy as np
+import statsmodels.api as sm
+
 
 from statsmodels.tsa.stattools import acf
 '''
@@ -35,7 +37,8 @@ def check_normality(timeseries):
 
 
 # Accuracy metrics
-def forecast_accuracy(forecast, actual, fc, test):
+# forecast, actual is numpy ndarray
+def forecast_accuracy(forecast, actual):
     mape = np.mean(np.abs(forecast - actual)/np.abs(actual))  # MAPE
     me = np.mean(forecast - actual)             # ME
     mae = np.mean(np.abs(forecast - actual))    # MAE
@@ -47,7 +50,17 @@ def forecast_accuracy(forecast, actual, fc, test):
     maxs = np.amax(np.hstack([forecast[:,None], 
                               actual[:,None]]), axis=1)
     minmax = 1 - np.mean(mins/maxs)             # minmax
-    acf1 = acf(fc-test)[1]                      # ACF1
+    # acf1 = acf(fc-test)[1]                      # ACF1
     return({'mape':mape, 'me':me, 'mae': mae, 
-            'mpe': mpe, 'rmse':rmse, 'acf1':acf1, 
+            'mpe': mpe, 'rmse':rmse, 
+            # 'acf1':acf1, 
             'corr':corr, 'minmax':minmax})
+
+
+def check_acorr_ljungbox(residuals, lags):
+    jbox_df = sm.stats.acorr_ljungbox(residuals, lags=10, return_df=True)
+    # print(jbox_df)
+    for lag in range(lags):
+        if jbox_df["lb_pvalue"][lag+1] < 0.05:
+            print("Có tự tương quan với lag", lag+1)
+    print("Khong co tự tương quan đến lags = ", lags)

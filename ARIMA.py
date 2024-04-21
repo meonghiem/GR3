@@ -22,7 +22,7 @@ from statsmodels.stats.descriptivestats import Description
 import matplotlib.pyplot as plt
 from numpy import log
 import numpy as np
-from utils import adf_test, check_normality
+from utils import adf_test, check_normality, forecast_accuracy, check_acorr_ljungbox
 
 
 
@@ -58,7 +58,7 @@ axes[0].plot(train); axes[0].set_title('original')
 sm.graphics.tsa.plot_acf(train.dropna(), ax=axes[1], lags=10)
 sm.graphics.tsa.plot_pacf(train.dropna(), ax=axes[2], lags=10)
 
-# plt.show()
+plt.show()
 '''
 Nhìn vào pacf có thể thấy bậc của AR sẽ là 2
 Nhìn vào acf có thể thấy bậc của MA có thể là 1,2,3,4,5,6,7,8,9,10
@@ -92,12 +92,13 @@ Nhìn vào acf có thể thấy bậc của MA có thể là 1,2,3,4,5,6,7,8,9,1
 #                       d=None,           # let model determine 'd'
 #                       seasonal=False,   # No Seasonality
 #                       start_P=0, 
-#                       D=0, 
+#                       D=0,
+#                     #   trend='c',
 #                       trace=True,
 #                       error_action='ignore',  
 #                       suppress_warnings=True, 
 #                       stepwise=True)
-#chọn được p,d,q là 2,0,2
+# # chọn được p,d,q là 2,0,2
 
 # print(model.summary())
 
@@ -128,37 +129,43 @@ Nhìn vào acf có thể thấy bậc của MA có thể là 1,2,3,4,5,6,7,8,9,1
 
 from statsmodels.tsa.arima.model import ARIMA
 model = ARIMA(train, order=(2,0,2))
+
+# dùng newton-rapson để ước lượng tham số
 model_fit = model.fit()
+print(model_fit.summary())
 
 # Plot residual errors
 residuals = pd.DataFrame(model_fit.resid)
-fig, ax = plt.subplots(1,2)
+fig, ax = plt.subplots(1,3)
 residuals.plot(title="Residuals", ax=ax[0])
-residuals.plot(kind='kde', title='Density', ax=ax[1])
+# residuals.plot(kind='kde', title='Density', ax=ax[1])
+sm.graphics.tsa.plot_acf(residuals, ax=ax[1], lags=10)
+sm.graphics.tsa.plot_pacf(residuals, ax=ax[2], lags=10)
 plt.show()
+
+print("================ check residual ===================")
+adf_test(residuals)
+
+check_acorr_ljungbox(residuals, lags=10)
+print("================ check residual ===================")
 
 # Actual vs Fitted
 from statsmodels.graphics.tsaplots import plot_predict
 fig, ax = plt.subplots(figsize=(10,8))
 ax.plot(train.loc[0:].reset_index(drop=True), '-g', label='observed')
-ax.plot(test.loc[0:].reset_index(drop=True), '-g', label='actual',color='darkgreen')
+ax.plot(np.arange(len(train),len(train) + len(test)),test.loc[0:].reset_index(drop=True), label='actual',color='yellow')
 plot_predict(model_fit, start=0, end=800, ax=ax)
 plt.show()
 
-# fc, se, conf = model_fit.forecast(119, alpha=0.05)  # 95% conf
+# forecast= model_fit.get_forecast(steps= 92, alpha=0.05)  # 95% conf
+forecast = model_fit.predict(start= 700, end= 792, dynamic = True)
+# Extract the forecasted values and confidence intervals
+# fc= forecast.predicted_mean
+# forecast_values = fc.to_numpy(copy = True)
+# Call the forecast_accuracy() function
+# accuracy_metrics = forecast_accuracy(forecast_values, test.to_numpy(copy=True))
+# print(accuracy_metrics)
 
-# # Make as pandas series
-# fc_series = pd.Series(fc, index=test.index)
-# lower_series = pd.Series(conf[:, 0], index=test.index)
-# upper_series = pd.Series(conf[:, 1], index=test.index)
+print(forecast)
 
-# # Plot
-# plt.figure(figsize=(12,5), dpi=100)
-# plt.plot(train, label='training')
-# plt.plot(test, label='actual')
-# plt.plot(fc_series, label='forecast')
-# plt.fill_between(lower_series.index, lower_series, upper_series, 
-#                  color='k', alpha=.15)
-# plt.title('Forecast vs Actuals')
-# plt.legend(loc='upper left', fontsize=8)
-# plt.show()
+
