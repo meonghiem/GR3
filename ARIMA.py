@@ -30,8 +30,8 @@ from utils import adf_test, check_normality, forecast_accuracy, check_acorr_ljun
 series_influ_A_df = read_csv('vietnam_flu_A.csv')
 series_influ_A_df = series_influ_A_df.dropna()
 # Create Training and Test
-train = series_influ_A_df["Influenza A - All types of surveillance"][:700]
-test = series_influ_A_df["Influenza A - All types of surveillance"][700:]
+train = series_influ_A_df["Influenza A - All types of surveillance"][:735]
+test = series_influ_A_df["Influenza A - All types of surveillance"][735:]
 
 # basicStats = Description(data=series_influ_A_df["Influenza A - All types of surveillance"])
 # print(basicStats)
@@ -130,7 +130,7 @@ Nhìn vào acf có thể thấy bậc của MA có thể là 1,2,3,4,5,6,7,8,9,1
 from statsmodels.tsa.arima.model import ARIMA
 model = ARIMA(train, order=(2,0,2))
 
-# dùng newton-rapson để ước lượng tham số
+# dùng lbfgs để ước lượng tham số maximum likelyhood
 model_fit = model.fit()
 print(model_fit.summary())
 
@@ -158,8 +158,8 @@ plot_predict(model_fit, start=0, end=800, ax=ax)
 plt.show()
 
 # forecast= model_fit.get_forecast(steps= 92, alpha=0.05)  # 95% conf
-forecast = model_fit.predict(start= 700, end= 791, dynamic = True)
-# print(forecast[:10])
+forecast = model_fit.predict(start= 735, end= 791, dynamic = True)
+print(forecast[:10])
 forecast_values = forecast.to_numpy(copy = True)
 
 # Call the forecast_accuracy() function
