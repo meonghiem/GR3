@@ -27,16 +27,20 @@ from utils import adf_test, check_normality, forecast_accuracy, check_acorr_ljun
 
 
 #Load data set
-series_influ_A_df = read_csv('vietnam_flu_A.csv')
+series_influ_A_df = read_csv('./data/vietnam_flu_A_month.csv')
 series_influ_A_df = series_influ_A_df.dropna()
 # Create Training and Test
-train = series_influ_A_df["Influenza A - All types of surveillance"][:735]
-test = series_influ_A_df["Influenza A - All types of surveillance"][735:]
-
+train = series_influ_A_df["Influenza A - All types of surveillance"][:150]
+test = series_influ_A_df["Influenza A - All types of surveillance"][150:]
+train = train.dropna()
+test = test.dropna()
 # basicStats = Description(data=series_influ_A_df["Influenza A - All types of surveillance"])
 # print(basicStats)
+train_diff = train.diff().dropna()
+test_diff = test.diff().dropna()
 
-adf_test(train)
+adf_test(train_diff)
+check_acorr_ljungbox(train_diff, lags=20)
 # ở dicky-fuller thì H0: chuỗi không có tính dừng
 # mà p-value < 0.05 nên bác bỏ H0 => chuỗi có tính dừng
 # => d = 0
@@ -48,15 +52,11 @@ check_normality(train)
 # Original Series
 import statsmodels.api as sm
 
-
-# PACF plot of 1st differenced series
-# plt.rcParams.update({'figure.figsize':(9,3), 'figure.dpi':120})
-
 fig, axes = plt.subplots(1, 3, figsize=(10,5))
-axes[0].plot(train); axes[0].set_title('original')
+axes[0].plot(train_diff); axes[0].set_title('diff')
 # axes[1].set(ylim=(0,5))
-sm.graphics.tsa.plot_acf(train.dropna(), ax=axes[1], lags=10)
-sm.graphics.tsa.plot_pacf(train.dropna(), ax=axes[2], lags=10)
+sm.graphics.tsa.plot_acf(train_diff.dropna(), ax=axes[1], lags=20)
+sm.graphics.tsa.plot_pacf(train_diff.dropna(), ax=axes[2], lags=20)
 
 plt.show()
 '''
@@ -85,11 +85,11 @@ Nhìn vào acf có thể thấy bậc của MA có thể là 1,2,3,4,5,6,7,8,9,1
 
 # import pmdarima as pm
 
-# model = pm.auto_arima(train, start_p=1, start_q=1,
+# model = pm.auto_arima(train, start_p=3, start_q=3,
 #                       test='adf',       # use adftest to find optimal 'd'
 #                       max_p=3, max_q=10, # maximum p and q
 #                       m=1,              # frequency of series
-#                       d=None,           # let model determine 'd'
+#                       d=1,           # let model determine 'd'
 #                       seasonal=False,   # No Seasonality
 #                       start_P=0, 
 #                       D=0,
@@ -128,7 +128,7 @@ Nhìn vào acf có thể thấy bậc của MA có thể là 1,2,3,4,5,6,7,8,9,1
 # plt.show()
 
 from statsmodels.tsa.arima.model import ARIMA
-model = ARIMA(train, order=(2,0,2))
+model = ARIMA(train, order=([2],1,2))
 
 # dùng lbfgs để ước lượng tham số maximum likelyhood
 model_fit = model.fit()
@@ -154,11 +154,11 @@ from statsmodels.graphics.tsaplots import plot_predict
 fig, ax = plt.subplots(figsize=(10,8))
 ax.plot(train.loc[0:].reset_index(drop=True), '-g', label='observed')
 ax.plot(np.arange(len(train),len(train) + len(test)),test.loc[0:].reset_index(drop=True), label='actual',color='yellow')
-plot_predict(model_fit, start=0, end=800, ax=ax)
+plot_predict(model_fit, start=0, end=183, ax=ax)
 plt.show()
 
 # forecast= model_fit.get_forecast(steps= 92, alpha=0.05)  # 95% conf
-forecast = model_fit.predict(start= 735, end= 791, dynamic = True)
+forecast = model_fit.predict(start= 150, end= 183, dynamic = True)
 print(forecast[:10])
 forecast_values = forecast.to_numpy(copy = True)
 

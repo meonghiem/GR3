@@ -58,9 +58,12 @@ def forecast_accuracy(forecast, actual):
 
 
 def check_acorr_ljungbox(residuals, lags):
-    jbox_df = sm.stats.acorr_ljungbox(residuals, lags=10, return_df=True)
-    # print(jbox_df)
+    jbox_df = sm.stats.acorr_ljungbox(residuals, lags=lags, return_df=True)
+    print(jbox_df)
+    is_have_acf = False
     for lag in range(lags):
         if jbox_df["lb_pvalue"][lag+1] < 0.05:
+            is_have_acf = True
             print("Có tự tương quan với lag", lag+1)
-    print("Khong co tự tương quan đến lags = ", lags)
+    if not is_have_acf:
+        print("Khong co tự tương quan đến lags = ", lags)

@@ -27,7 +27,7 @@ from utils import adf_test, check_normality, forecast_accuracy, check_acorr_ljun
 
 
 #Load data set
-series_influ_A_df = read_csv('vietnam_flu_A.csv')
+series_influ_A_df = read_csv('./data/vietnam_flu_A.csv')
 series_influ_A_df = series_influ_A_df.dropna()
 # Create Training and Test
 train = series_influ_A_df["Influenza A - All types of surveillance"][:735]
@@ -37,6 +37,7 @@ test = series_influ_A_df["Influenza A - All types of surveillance"][735:]
 # print(basicStats)
 
 adf_test(train)
+check_acorr_ljungbox(train, lags=10)
 # ở dicky-fuller thì H0: chuỗi không có tính dừng
 # mà p-value < 0.05 nên bác bỏ H0 => chuỗi có tính dừng
 # => d = 0
