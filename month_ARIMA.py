@@ -51,13 +51,30 @@ check_normality(train)
 
 # Original Series
 import statsmodels.api as sm
+fig, axes = plt.subplots(1, 3, figsize=(10,5))
+axes[0].plot(train); axes[0].set_title('original')
+# axes[1].set(ylim=(0,5))
+sm.graphics.tsa.plot_acf(train.dropna(), ax=axes[1], lags=36)
+sm.graphics.tsa.plot_pacf(train.dropna(), ax=axes[2], lags=36)
+
+axes[1].set_xticks(range(0,36,12))
+axes[2].set_xticks(range(0,36,12))
+axes[1].grid(axis = 'x')
+axes[2].grid(axis = 'x')
+plt.show()
+
+#difference
+import statsmodels.api as sm
 
 fig, axes = plt.subplots(1, 3, figsize=(10,5))
 axes[0].plot(train_diff); axes[0].set_title('diff')
 # axes[1].set(ylim=(0,5))
-sm.graphics.tsa.plot_acf(train_diff.dropna(), ax=axes[1], lags=20)
-sm.graphics.tsa.plot_pacf(train_diff.dropna(), ax=axes[2], lags=20)
-
+sm.graphics.tsa.plot_acf(train_diff.dropna(), ax=axes[1], lags=36)
+sm.graphics.tsa.plot_pacf(train_diff.dropna(), ax=axes[2], lags=36)
+axes[1].set_xticks(range(0,36,12))
+axes[2].set_xticks(range(0,36,12))
+axes[1].grid(axis = 'x')
+axes[2].grid(axis = 'x')
 plt.show()
 '''
 Nhìn vào pacf có thể thấy bậc của AR sẽ là 2
@@ -158,7 +175,7 @@ plot_predict(model_fit, start=0, end=183, ax=ax)
 plt.show()
 
 # forecast= model_fit.get_forecast(steps= 92, alpha=0.05)  # 95% conf
-forecast = model_fit.predict(start= 150, end= 183, dynamic = True)
+forecast = model_fit.predict(start= 150, end= 182, dynamic = True)
 print(forecast[:10])
 forecast_values = forecast.to_numpy(copy = True)
 
