@@ -27,7 +27,7 @@ from utils import adf_test, check_normality, forecast_accuracy, check_acorr_ljun
 
 
 #Load data set
-series_influ_A_df = read_csv('./data/vietnam_flu_A.csv')
+series_influ_A_df = read_csv('../data/vietnam_flu_A.csv')
 series_influ_A_df = series_influ_A_df.dropna()
 # Create Training and Test
 train = series_influ_A_df["Influenza A - All types of surveillance"][:735]
