@@ -67,3 +67,18 @@ def check_acorr_ljungbox(residuals, lags):
             print("Có tự tương quan với lag", lag+1)
     if not is_have_acf:
         print("Khong co tự tương quan đến lags = ", lags)
+
+def printAIC(startQ, endQ, data):
+    from statsmodels.tsa.arima.model import ARIMA
+    result ={}
+    for i in range(startQ, endQ, 1):
+        model = ARIMA(data, order=(2,0,i))
+        key = f"({i}, 0, 2)"
+        model_fit = model.fit()
+        summary = model_fit.summary()
+        print(summary)
+        result[key] = model_fit.aic
+    # print("order\t\tAIC")
+    print("%s\t\t\t\t%s" % ("order", "AIC"))
+    for key in result:
+        print("%s\t\t%s" % (key, result[key]))
