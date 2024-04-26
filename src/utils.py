@@ -73,7 +73,7 @@ def printAIC(startQ, endQ, data):
     result ={}
     for i in range(startQ, endQ, 1):
         model = ARIMA(data, order=(2,0,i))
-        key = f"({i}, 0, 2)"
+        key = f"(2, 0, {i})"
         model_fit = model.fit()
         summary = model_fit.summary()
         print(summary)
