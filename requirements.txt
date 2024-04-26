@@ -2,3 +2,4 @@ statsmodels
 pandas
 matplotlib
 pmdarima
+plotly
