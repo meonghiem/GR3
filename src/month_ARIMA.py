@@ -22,7 +22,7 @@ from statsmodels.stats.descriptivestats import Description
 import matplotlib.pyplot as plt
 from numpy import log
 import numpy as np
-from utils import adf_test, check_normality, forecast_accuracy, check_acorr_ljungbox
+from utils import adf_test, check_normality_eng, forecast_accuracy, check_acorr_ljungbox
 
 
 
@@ -45,7 +45,7 @@ check_acorr_ljungbox(train_diff, lags=20)
 # mà p-value < 0.05 nên bác bỏ H0 => chuỗi có tính dừng
 # => d = 0
 
-check_normality(train)
+check_normality_eng(train)
 # jb_value, p_value, skewness, kurtosis = jarque_bera(series_influ_A_df["Influenza A - All types of surveillance"])
 # print(p_value) # pvalue nhỏ  => bác bỏ H0: chuỗi phân bố chuẩn => là chuỗi không tuân theo phân bố chuẩn
 

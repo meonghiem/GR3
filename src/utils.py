@@ -35,6 +35,14 @@ def check_normality(timeseries):
     else:
         print("Không đủ điều kiện bác bỏ H0 => Chuỗi phân bố chuẩn")
 
+# pvalue nhỏ  => bác bỏ H0: chuỗi phân bố chuẩn => là chuỗi không tuân theo phân bố chuẩn
+def check_normality_eng(timeseries):
+    jb_value, p_value, skewness, kurtosis = jarque_bera(timeseries)
+    if p_value < 0.05:
+        print("Reject H0: normality => timeseries is not normality")
+    else:
+        print("Accept H0 => timeseries is normality")
+
 
 # Accuracy metrics
 # forecast, actual is numpy ndarray
