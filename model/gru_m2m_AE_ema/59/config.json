@@ -1,1 +1,0 @@
-{"num_features": 2, "layers": [false, true, true], "units": [64, 128, 64, 32], "n_batch_size": 4, "dropout": 0.2, "look_back": 17, "is_ema": true}
